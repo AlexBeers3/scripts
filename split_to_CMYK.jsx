@@ -1,31 +1,30 @@
 var doc = app.activeDocument;
 
 //switch color mode to get 4 channels
-var CMYK = doc.changeMode(ChangeMode.CMYK);
+doc.changeMode(ChangeMode.CMYK);
 
 //makes 4 layers named after the channels and adjusts blending mode
 function makeLayers() {
   try {
     if (app.documents.length) {
       var layerColor = ["Cyan", "Magenta", "Yellow", "Black"]
-      var doc = activeDocument;
       var layers = doc.artLayers;
-      var cmyk = [
-        layerA = layers.add(),
-        layerB = layers.add(),
-        layerC = layers.add(),
-        layerD = layers.add()
+      var cmyk_layers = [
+        layerK = layers.add(),
+        layerY = layers.add(),
+        layerM = layers.add(),
+        layerC = layers.add()
       ];
 
       if (layerColor) {
-        cmyk[0].name = layerColor[3];
-        cmyk[0].blendMode = BlendMode.NORMAL
-        cmyk[1].name = layerColor[2];
-        cmyk[1].blendMode = BlendMode.MULTIPLY
-        cmyk[2].name = layerColor[1];
-        cmyk[2].blendMode = BlendMode.MULTIPLY
-        cmyk[3].name = layerColor[0];
-        cmyk[3].blendMode = BlendMode.MULTIPLY
+        cmyk_layers[0].name = layerColor[3];
+        cmyk_layers[0].blendMode = BlendMode.NORMAL
+        cmyk_layers[1].name = layerColor[2];
+        cmyk_layers[1].blendMode = BlendMode.MULTIPLY
+        cmyk_layers[2].name = layerColor[1];
+        cmyk_layers[2].blendMode = BlendMode.MULTIPLY
+        cmyk_layers[3].name = layerColor[0];
+        cmyk_layers[3].blendMode = BlendMode.MULTIPLY
 
       }
 
