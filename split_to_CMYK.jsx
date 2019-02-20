@@ -27,41 +27,20 @@ function makeLayers() {
   			layerC.name = 'Cyan';
   			layerC.blendMode = BlendMode.MULTIPLY;
 }
-makeLayers();
-
+  //used in splitChannels function
+function selectCopy() {
+        doc.selection.selectAll();
+        doc.selection.copy();
+  }
 //copies channels into corresponding layers
 function splitChannels(targetChannel) {
-    
     doc.activeLayer = doc.artLayers.getByName("Background");
-
     doc.activeChannels = [doc.channels.getByName(targetChannel)];
-        function selectCopy() {
-          doc.selection.selectAll();
-          doc.selection.copy();
-  }selectCopy();
-      
-      switch (targetChannel) {
-        case 'Cyan':
-          doc.activeLayer = doc.artLayers.getByName("Cyan");
-          doc.paste();
-          break;
-        case 'Magenta':
-          doc.activeLayer = doc.artLayers.getByName("Magenta");
-          doc.paste();
-          break;
-        case 'Yellow':
-          doc.activeLayer = doc.artLayers.getByName("Yellow");
-          doc.paste();
-          break;
-        case 'Black':
-          doc.activeLayer = doc.artLayers.getByName("Black");
-          doc.paste();
-          break;
-        default:
-          doc.activeLayer = doc.artLayers.getByName("Background");
-    }
+    selectCopy();  
+    doc.activeLayer = doc.artLayers.getByName(targetChannel);
+    doc.paste();
 } 
-
+makeLayers();
 splitChannels('Cyan');
 splitChannels('Magenta');
 splitChannels('Yellow');
