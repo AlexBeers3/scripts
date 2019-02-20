@@ -2,4 +2,8 @@ Testing testing
 
 alert 'Hello World!'
 
+<<<<<<< HEAD
 yeah thats what she said
+=======
+[KEVIN WAS HERE]
+>>>>>>> 6c0651f26f7bdc3175dd02e6d3c4bf7793dfad6b
