@@ -1,3 +1,6 @@
+#target photoshop
+#targetengine "main"
+
 var doc = app.activeDocument;
 
 //switch color mode to get 4 channels
@@ -26,7 +29,42 @@ function makeLayers() {
 }
 makeLayers();
 
-  /*try {
+function splitChannels(targetChannel) {
+    doc.activeLayer = doc.layers[4];
+
+    doc.activeChannels = [doc.channels.getByName(targetChannel)];
+        function selectCopy() {
+          doc.selection.selectAll();
+          doc.selection.copy();
+  }
+      if(targetChannel = 'Cyan') {
+          doc.activeLayer = doc.layers[0];
+          doc.paste();
+    } else if (targetChannel = 'Magenta'){
+          doc.activeLayer = doc.layers[1];
+          doc.paste();
+    } else if (targetChannel = 'Yellow'){
+          doc.activeLayer = doc.layers[2];
+          doc.paste();
+    } else {
+          doc.activeLayer = doc.layers[3];
+          doc.paste();
+  }
+      
+}
+splitChannels('Cyan');
+splitChannels('Magenta');
+splitChannels('Yellow');
+splitChannels('Black');
+
+//sets color mode back to RGB
+doc.changeMode(ChangeMode.RGB);
+
+//runs the adjustment layers action set
+app.doAction("split_to_CMYK_adj_layers", "split_to_CMYK_adj_layers.ATN");
+
+
+/*try {
     if (app.documents.length) {
       var layerColor = ["Cyan", "Magenta", "Yellow", "Black"];
       var layers = doc.artLayers;
@@ -53,9 +91,12 @@ makeLayers();
     }
   } catch (e) {}
 }
-makeLayers();*/
-var selectBG = doc.activeLayer = doc.layers[4];
+makeLayers();
 
+function selectCopy() {
+  doc.selection.selectAll();
+  doc.selection.copy();
+}
 
 //copies channels into corresponding layers
 function splitCyan() {
@@ -66,7 +107,6 @@ function splitCyan() {
   doc.activeLayer = doc.layers[0];
   doc.paste();
 }
-splitCyan()
 
 function splitMagenta() {
   doc.activeLayer = doc.layers[4];
@@ -76,7 +116,6 @@ function splitMagenta() {
   doc.activeLayer = doc.layers[1];
   doc.paste();
 }
-splitMagenta()
 
 function splitYellow() {
   doc.activeLayer = doc.layers[4];
@@ -86,7 +125,6 @@ function splitYellow() {
   doc.activeLayer = doc.layers[2];
   doc.paste();
 }
-splitYellow()
 
 function splitBlack() {
   doc.activeLayer = doc.layers[4];
@@ -96,10 +134,5 @@ function splitBlack() {
   doc.activeLayer = doc.layers[3];
   doc.paste();
 }
-splitBlack();
+*/
 
-//sets color mode back to RGB
-doc.changeMode(ChangeMode.RGB);
-
-//runs the adjustment layers action set
-app.doAction("split_to_CMYK_adj_layers", "split_to_CMYK_adj_layers.ATN");
