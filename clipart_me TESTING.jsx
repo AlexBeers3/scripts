@@ -3,6 +3,26 @@
 
 var doc = app.activeDocument;
 
+
+
+function makeHueSat(){//works with any mode  
+   var desc = new ActionDescriptor();  
+   var ref = new ActionReference();  
+     ref.putClass( charIDToTypeID( "AdjL" ) );  
+   desc.putReference( charIDToTypeID( "null" ), ref );  
+   var desc1 = new ActionDescriptor();  
+     desc1.putClass( charIDToTypeID( "Type" ), charIDToTypeID("HStr" ) );  
+   desc.putObject( charIDToTypeID( "Usng" ), charIDToTypeID( "AdjL" ), desc1 );  
+   executeAction( charIDToTypeID( "Mk  " ), desc, DialogModes.NO );
+   var desc2 = new ActionDescriptor
+   var idClrz = charIDToTypeID( "Clrz" );
+     desc2.putBoolean( idClrz, true );  
+}; 
+makeHueSat();
+
+
+
+
 //add hue sat adj layer
 var idMk = charIDToTypeID( "Mk  " );
     var desc22 = new ActionDescriptor();
@@ -30,9 +50,41 @@ var idMk = charIDToTypeID( "Mk  " );
     var idAdjL = charIDToTypeID( "AdjL" );
     desc22.putObject( idUsng, idAdjL, desc23 );
 executeAction( idMk, desc22, DialogModes.NO );
+//adj hue/sat options
+var idsetd = charIDToTypeID( "setd" );
+    var desc12 = new ActionDescriptor();
+    var idnull = charIDToTypeID( "null" );
+        var ref3 = new ActionReference();
+        var idAdjL = charIDToTypeID( "AdjL" );
+        var idOrdn = charIDToTypeID( "Ordn" );
+        var idTrgt = charIDToTypeID( "Trgt" );
+        ref3.putEnumerated( idAdjL, idOrdn, idTrgt );
+    desc12.putReference( idnull, ref3 );
+    var idT = charIDToTypeID( "T   " );
+        var desc13 = new ActionDescriptor();
+        var idAdjs = charIDToTypeID( "Adjs" );
+            var list1 = new ActionList();
+                var desc14 = new ActionDescriptor();
+                var idChnl = charIDToTypeID( "Chnl" );
+                var idChnl = charIDToTypeID( "Chnl" );
+                var idCmps = charIDToTypeID( "Cmps" );
+                desc14.putEnumerated( idChnl, idChnl, idCmps );
+                var idH = charIDToTypeID( "H   " );
+                desc14.putInteger( idH, 0 );
+                var idStrt = charIDToTypeID( "Strt" );
+                desc14.putInteger( idStrt, 50 );
+                var idLght = charIDToTypeID( "Lght" );
+                desc14.putInteger( idLght, 20 );
+            var idHsttwo = charIDToTypeID( "Hst2" );
+            list1.putObject( idHsttwo, desc14 );
+        desc13.putList( idAdjs, list1 );
+    var idHStr = charIDToTypeID( "HStr" );
+    desc12.putObject( idT, idHStr, desc13 );
+executeAction( idsetd, desc12, DialogModes.NO );
+
 
 //add levels adj layer
-var idMk = charIDToTypeID( "Mk  " );
+/*var idMk = charIDToTypeID( "Mk  " );
     var desc29 = new ActionDescriptor();
     var idnull = charIDToTypeID( "null" );
         var ref14 = new ActionReference();
@@ -55,7 +107,7 @@ var idMk = charIDToTypeID( "Mk  " );
         desc30.putObject( idType, idLvls, desc31 );
     var idAdjL = charIDToTypeID( "AdjL" );
     desc29.putObject( idUsng, idAdjL, desc30 );
-executeAction( idMk, desc29, DialogModes.NO );
+executeAction( idMk, desc29, DialogModes.NO );*/
 
 // reset swatches
 /*var idRset = charIDToTypeID( "Rset" );
