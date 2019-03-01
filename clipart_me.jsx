@@ -2,21 +2,24 @@
 #targetengine "main"
 
 var doc = app.activeDocument;
+var c2t = function (s) {
+    return app.charIDToTypeID(s);
+};
+var s2t = function (s) {
+    return app.stringIDToTypeID(s);
+};
 
 //reset default foreground background color
 function resetSwatches () {
-    var idRset = charIDToTypeID( "Rset" );
-    var desc12 = new ActionDescriptor();
-    var idnull = charIDToTypeID( "null" );
-        var ref2 = new ActionReference();
-        var idClr = charIDToTypeID( "Clr " );
-        var idClrs = charIDToTypeID( "Clrs" );
-        ref2.putProperty( idClr, idClrs );
-    desc12.putReference( idnull, ref2 );
-executeAction( idRset, desc12, DialogModes.NO );
-}; 
-//resizes image proportionally
+    var descriptor = new ActionDescriptor();
+    var reference = new ActionReference();
 
+    reference.putProperty( s2t( "color" ), s2t( "colors" ));
+    descriptor.putReference( c2t( "null" ), reference );
+    executeAction( s2t( "reset" ), descriptor, DialogModes.NO );
+}; 
+
+//resizes image proportionally
 function reSizeImage(width, height) {
     var fWidth = width;
     var fHeight = height;
@@ -31,15 +34,12 @@ function reSizeImage(width, height) {
 
 //camera RAW filter to reduce noise and adj contrast/clarity
 function cameraRaw () {
-    var idAdobeCameraRawFilter = stringIDToTypeID( "Adobe Camera Raw Filter" );
-    var desc14 = new ActionDescriptor();
-    var noiseReduce = charIDToTypeID( "LNR " );
-    desc14.putInteger( noiseReduce, 100 );
-    var contrast = charIDToTypeID( "Cr12" );
-    desc14.putInteger( contrast, 25 );
-    var clarity = charIDToTypeID( "Cl12" );
-    desc14.putInteger( clarity, 25 );
-executeAction( idAdobeCameraRawFilter, desc14, DialogModes.NO );
+    var descriptor = new ActionDescriptor();
+
+    descriptor.putInteger( c2t( "LNR " ), 100 );
+    descriptor.putInteger( c2t( "Cr12" ), 25 );
+    descriptor.putInteger( c2t( "Cl12" ), 25 );
+    executeAction( s2t( "Adobe Camera Raw Filter" ), descriptor, DialogModes.NO );
 };
 
 //Converts to smart object
@@ -50,41 +50,27 @@ executeAction(idnewPlacedLayer, undefined, DialogModes.NO);
 
 //selects subject
 function selectAndMask () {
-    var idautoCutout = stringIDToTypeID( "autoCutout" );
-    var desc58 = new ActionDescriptor();
-    var idsampleAllLayers = stringIDToTypeID( "sampleAllLayers" );
-    desc58.putBoolean( idsampleAllLayers, false );
-executeAction( idautoCutout, desc58, DialogModes.NO );
-//applies layer mask
-    var idMk = charIDToTypeID( "Mk  " );
-    var desc85 = new ActionDescriptor();
-    var idNw = charIDToTypeID( "Nw  " );
-    var idChnl = charIDToTypeID( "Chnl" );
-    desc85.putClass( idNw, idChnl );
-    var idAt = charIDToTypeID( "At  " );
-        var ref33 = new ActionReference();
-        var idChnl = charIDToTypeID( "Chnl" );
-        var idChnl = charIDToTypeID( "Chnl" );
-        var idMsk = charIDToTypeID( "Msk " );
-        ref33.putEnumerated( idChnl, idChnl, idMsk );
-    desc85.putReference( idAt, ref33 );
-    var idUsng = charIDToTypeID( "Usng" );
-    var idUsrM = charIDToTypeID( "UsrM" );
-    var idRvlS = charIDToTypeID( "RvlS" );
-    desc85.putEnumerated( idUsng, idUsrM, idRvlS );
-executeAction( idMk, desc85, DialogModes.NO );
+    var descriptor = new ActionDescriptor();
+    var descriptor2 = new ActionDescriptor();
+    var reference = new ActionReference();
+
+    descriptor.putBoolean( s2t( "sampleAllLayers" ), false );
+    executeAction( s2t( "autoCutout" ), descriptor, DialogModes.NO );
+    //applies layer mask
+    descriptor2.putClass( s2t( "new" ), s2t( "channel" ));
+    reference.putEnumerated( s2t( "channel" ), s2t( "channel" ), s2t( "mask" ));
+    descriptor2.putReference( s2t( "at" ), reference );
+    descriptor2.putEnumerated( s2t( "using" ), c2t( "UsrM" ), s2t( "revealSelection" ));
+    executeAction( s2t( "make" ), descriptor2, DialogModes.NO );
 };
 
 //surface blur
 function surfaceBlur () {
-    var idsurfaceBlur = stringIDToTypeID( "surfaceBlur" );
-    var desc8 = new ActionDescriptor();
-    var idRds = charIDToTypeID( "Rds " );
-    var idPxl = charIDToTypeID( "#Pxl" );
-    desc8.putUnitDouble( idRds, idPxl, 50.000000 );
-    var idThsh = charIDToTypeID( "Thsh" );
-    desc8.putInteger( idThsh, 20 );
-executeAction( idsurfaceBlur, desc8, DialogModes.NO );
+    var descriptor = new ActionDescriptor();
+
+    descriptor.putUnitDouble( c2t( "Rds " ), s2t( "pixelsUnit" ), 50 );
+    descriptor.putInteger( s2t( "threshold" ), 20 );
+    executeAction( s2t( "surfaceBlur" ), descriptor, DialogModes.NO );
 };
 
 //gaussian blur & unsharp mask
@@ -95,113 +81,64 @@ function blurUnsharp() {
 
 //diffuse
 function diffuse () {
-    var idDfs = charIDToTypeID( "Dfs " );
-    var desc10 = new ActionDescriptor();
-    var idMd = charIDToTypeID( "Md  " );
-    var idDfsM = charIDToTypeID( "DfsM" );
-    var idanisotropic = stringIDToTypeID( "anisotropic" );
-    desc10.putEnumerated( idMd, idDfsM, idanisotropic );
-    var idFlRs = charIDToTypeID( "FlRs" );
-    desc10.putInteger( idFlRs, 1273312 );
-executeAction( idDfs, desc10, DialogModes.NO );
+    var descriptor = new ActionDescriptor();
+
+    descriptor.putEnumerated( s2t( "mode" ), s2t( "diffuseMode" ), s2t( "anisotropic" ));
+    descriptor.putInteger( c2t( "FlRs" ), 1273312 );
+    executeAction( s2t( "diffuse" ), descriptor, DialogModes.NO );
 };
 
 //add stroke to layer
 function addStroke () {
-    var idsetd = charIDToTypeID( "setd" );
-    var desc33 = new ActionDescriptor();
-    var idnull = charIDToTypeID( "null" );
-        var ref7 = new ActionReference();
-        var idPrpr = charIDToTypeID( "Prpr" );
-        var idLefx = charIDToTypeID( "Lefx" );
-        ref7.putProperty( idPrpr, idLefx );
-        var idLyr = charIDToTypeID( "Lyr " );
-        var idOrdn = charIDToTypeID( "Ordn" );
-        var idTrgt = charIDToTypeID( "Trgt" );
-        ref7.putEnumerated( idLyr, idOrdn, idTrgt );
-    desc33.putReference( idnull, ref7 );
-    var idT = charIDToTypeID( "T   " );
-        var desc34 = new ActionDescriptor();
-        var idScl = charIDToTypeID( "Scl " );
-        var idPrc = charIDToTypeID( "#Prc" );
-        desc34.putUnitDouble( idScl, idPrc, 416.666667 );
-        var idFrFX = charIDToTypeID( "FrFX" );
-            var desc35 = new ActionDescriptor();
-            var idenab = charIDToTypeID( "enab" );
-            desc35.putBoolean( idenab, true );
-            var idpresent = stringIDToTypeID( "present" );
-            desc35.putBoolean( idpresent, true );
-            var idshowInDialog = stringIDToTypeID( "showInDialog" );
-            desc35.putBoolean( idshowInDialog, true );
-            var idStyl = charIDToTypeID( "Styl" );
-            var idFStl = charIDToTypeID( "FStl" );
-            var idOutF = charIDToTypeID( "OutF" );
-            desc35.putEnumerated( idStyl, idFStl, idOutF );
-            var idPntT = charIDToTypeID( "PntT" );
-            var idFrFl = charIDToTypeID( "FrFl" );
-            var idSClr = charIDToTypeID( "SClr" );
-            desc35.putEnumerated( idPntT, idFrFl, idSClr );
-            var idMd = charIDToTypeID( "Md  " );
-            var idBlnM = charIDToTypeID( "BlnM" );
-            var idNrml = charIDToTypeID( "Nrml" );
-            desc35.putEnumerated( idMd, idBlnM, idNrml );
-            var idOpct = charIDToTypeID( "Opct" );
-            var idPrc = charIDToTypeID( "#Prc" );
-            desc35.putUnitDouble( idOpct, idPrc, 100.000000 );
-            var idSz = charIDToTypeID( "Sz  " );
-            var idPxl = charIDToTypeID( "#Pxl" );
-            desc35.putUnitDouble( idSz, idPxl, 5.000000 );
-            var idClr = charIDToTypeID( "Clr " );
-                var desc36 = new ActionDescriptor();
-                var idRd = charIDToTypeID( "Rd  " );
-                desc36.putDouble( idRd, 0.000000 );
-                var idGrn = charIDToTypeID( "Grn " );
-                desc36.putDouble( idGrn, 0.000000 );
-                var idBl = charIDToTypeID( "Bl  " );
-                desc36.putDouble( idBl, 0.000000 );
-            var idRGBC = charIDToTypeID( "RGBC" );
-            desc35.putObject( idClr, idRGBC, desc36 );
-            var idoverprint = stringIDToTypeID( "overprint" );
-            desc35.putBoolean( idoverprint, false );
-        var idFrFX = charIDToTypeID( "FrFX" );
-        desc34.putObject( idFrFX, idFrFX, desc35 );
-    var idLefx = charIDToTypeID( "Lefx" );
-    desc33.putObject( idT, idLefx, desc34 );
-executeAction( idsetd, desc33, DialogModes.NO );
+    var descriptor = new ActionDescriptor();
+    var descriptor2 = new ActionDescriptor();
+    var descriptor3 = new ActionDescriptor();
+    var descriptor4 = new ActionDescriptor();
+    var reference = new ActionReference();
+
+    reference.putProperty( s2t( "property" ), s2t( "layerEffects" ));
+    reference.putEnumerated( s2t( "layer" ), s2t( "ordinal" ), s2t( "targetEnum" ));
+    descriptor.putReference( c2t( "null" ), reference );
+    descriptor3.putEnumerated( s2t( "style" ), s2t( "frameStyle" ), s2t( "outsetFrame" ));
+    descriptor3.putEnumerated( s2t( "paintType" ), s2t( "frameFill" ), s2t( "solidColor" ));
+    descriptor3.putUnitDouble( s2t( "opacity" ), s2t( "percentUnit" ), 100 );
+    descriptor3.putUnitDouble( s2t( "size" ), s2t( "pixelsUnit" ), 5 );
+    descriptor3.putObject( s2t( "color" ), s2t( "RGBColor" ), descriptor4 );
+    descriptor2.putObject( s2t( "frameFX" ), s2t( "frameFX" ), descriptor3 );
+    descriptor.putObject( s2t( "to" ), s2t( "layerEffects" ), descriptor2 );
+    executeAction( s2t( "set" ), descriptor, DialogModes.NO );
 };
 
 //threshold ajustment layer
 function thresh() {
-    var idMk = charIDToTypeID( "Mk  " );
-    var desc23 = new ActionDescriptor();
-    var idnull = charIDToTypeID( "null" );
-        var ref3 = new ActionReference();
-        var idAdjL = charIDToTypeID( "AdjL" );
-        ref3.putClass( idAdjL );
-    desc23.putReference( idnull, ref3 );
-    var idUsng = charIDToTypeID( "Usng" );
-        var desc24 = new ActionDescriptor();
-        var idType = charIDToTypeID( "Type" );
-            var desc25 = new ActionDescriptor();
-            var idLvl = charIDToTypeID( "Lvl " );
-            desc25.putInteger( idLvl, 128 );
-        var idThrs = charIDToTypeID( "Thrs" );
-        desc24.putObject( idType, idThrs, desc25 );
-    var idAdjL = charIDToTypeID( "AdjL" );
-    desc23.putObject( idUsng, idAdjL, desc24 );
-executeAction( idMk, desc23, DialogModes.NO );
+    var descriptor = new ActionDescriptor();
+    var descriptor2 = new ActionDescriptor();
+    var descriptor3 = new ActionDescriptor();
+    var reference = new ActionReference();
+
+    reference.putClass( s2t( "adjustmentLayer" ));
+    descriptor.putReference( c2t( "null" ), reference );
+    descriptor3.putInteger( s2t( "level" ), 128 );
+    descriptor2.putObject( s2t( "type" ), s2t( "thresholdClassEvent" ), descriptor3 );
+    descriptor.putObject( s2t( "using" ), s2t( "adjustmentLayer" ), descriptor2 );
+    executeAction( s2t( "make" ), descriptor, DialogModes.NO );
 };
 
+
 resetSwatches ();
+
 //duplicates original image
 doc.selection.selectAll();
 doc.selection.copy();
 doc.paste();
+
+//sizes down, runs camera raw, sizes up, smart object with mask
 reSizeImage(500,500);
 cameraRaw ();
 reSizeImage(2000,2000);
 makeSmart ();
 selectAndMask ()
+
 //makes sure layer mask isn't selected for next steps
 doc.activeLayer = doc.artLayers.getByName("Background");
 doc.activeLayer = doc.artLayers.getByName("Layer 1");
@@ -210,9 +147,13 @@ blurUnsharp();
 diffuse ();
 addStroke();
 thresh();
+
 //hides background and selects Threshold layer
 doc.activeLayer = doc.artLayers.getByName("Background");
 doc.activeLayer.visible = !doc.activeLayer.visible;
 doc.activeLayer = doc.artLayers.getByName("Threshold 1");
+
+//trims empyt space in doc
+doc.trim(TrimType.TOPLEFT)
 
 alert("Clipart Me\n* Use Threshold to adjust darkness of image\n* Turn off filters to get more detail\n* Adjust layer mask to show/hide content\n* Original image is hidden on bottom layer");

@@ -40,94 +40,72 @@ function splitChannels(targetChannel) {
     doc.activeLayer = doc.artLayers.getByName(targetChannel);
     doc.paste();
 } 
+
 function addLevelsHueSat(layerName, hue, sat, light) {
 //add levels adj layer
     doc.activeLayer = doc.artLayers.getByName(layerName);
-    var idMk = charIDToTypeID( "Mk  " );
-    var desc29 = new ActionDescriptor();
-    var idnull = charIDToTypeID( "null" );
-        var ref14 = new ActionReference();
-        var idAdjL = charIDToTypeID( "AdjL" );
-        ref14.putClass( idAdjL );
-    desc29.putReference( idnull, ref14 );
-    var idUsng = charIDToTypeID( "Usng" );
-        var desc30 = new ActionDescriptor();
-        var idNm = charIDToTypeID( "Nm  " );
-        desc30.putString( idNm, (layerName) + """ Levels""" );
-        var idGrup = charIDToTypeID( "Grup" );
-        desc30.putBoolean( idGrup, true );
-        var idType = charIDToTypeID( "Type" );
-            var desc31 = new ActionDescriptor();
-            var idpresetKind = stringIDToTypeID( "presetKind" );
-            var idpresetKindType = stringIDToTypeID( "presetKindType" );
-            var idpresetKindDefault = stringIDToTypeID( "presetKindDefault" );
-            desc31.putEnumerated( idpresetKind, idpresetKindType, idpresetKindDefault );
-        var idLvls = charIDToTypeID( "Lvls" );
-        desc30.putObject( idType, idLvls, desc31 );
-    var idAdjL = charIDToTypeID( "AdjL" );
-    desc29.putObject( idUsng, idAdjL, desc30 );
-executeAction( idMk, desc29, DialogModes.NO );
+    var c2t = function (s) {
+        return app.charIDToTypeID(s);
+    };
+    var s2t = function (s) {
+        return app.stringIDToTypeID(s);
+    };
+    var descriptor = new ActionDescriptor();
+    var descriptor2 = new ActionDescriptor();
+    var descriptor3 = new ActionDescriptor();
+    var reference = new ActionReference();
+
+    reference.putClass( s2t( "adjustmentLayer" ));
+    descriptor.putReference( c2t( "null" ), reference );
+    descriptor2.putString( s2t( "name" ), (layerName) + """ Levels""" );
+    descriptor2.putBoolean( s2t( "group" ), true );
+    descriptor3.putEnumerated( s2t( "presetKind" ), s2t( "presetKindType" ), s2t( "presetKindDefault" ));
+    descriptor2.putObject( s2t( "type" ), s2t( "levels" ), descriptor3 );
+    descriptor.putObject( s2t( "using" ), s2t( "adjustmentLayer" ), descriptor2 );
+    executeAction( s2t( "make" ), descriptor, DialogModes.NO );
 //add hue sat adj layer - if statement is so Black doesnt get a hue adj layer
     if (layerName != 'Black') {
-        var idMk = charIDToTypeID( "Mk  " );
-    var desc22 = new ActionDescriptor();
-    var idnull = charIDToTypeID( "null" );
-        var ref11 = new ActionReference();
-        var idAdjL = charIDToTypeID( "AdjL" );
-        ref11.putClass( idAdjL );
-    desc22.putReference( idnull, ref11 );
-    var idUsng = charIDToTypeID( "Usng" );
-        var desc23 = new ActionDescriptor();
-        var idNm = charIDToTypeID( "Nm  " );
-        desc23.putString( idNm, (layerName) + """ color adjust""" );
-        var idGrup = charIDToTypeID( "Grup" );
-        desc23.putBoolean( idGrup, true );
-        var idType = charIDToTypeID( "Type" );
-            var desc24 = new ActionDescriptor();
-            var idpresetKind = stringIDToTypeID( "presetKind" );
-            var idpresetKindType = stringIDToTypeID( "presetKindType" );
-            var idpresetKindDefault = stringIDToTypeID( "presetKindDefault" );
-            desc24.putEnumerated( idpresetKind, idpresetKindType, idpresetKindDefault );
-            var idClrz = charIDToTypeID( "Clrz" );
-            desc24.putBoolean( idClrz, true );
-        var idHStr = charIDToTypeID( "HStr" );
-        desc23.putObject( idType, idHStr, desc24 );
-    var idAdjL = charIDToTypeID( "AdjL" );
-    desc22.putObject( idUsng, idAdjL, desc23 );
-executeAction( idMk, desc22, DialogModes.NO );
-//sets hue/sat values for each layer
-var idsetd = charIDToTypeID( "setd" );
-    var desc12 = new ActionDescriptor();
-    var idnull = charIDToTypeID( "null" );
-        var ref3 = new ActionReference();
-        var idAdjL = charIDToTypeID( "AdjL" );
-        var idOrdn = charIDToTypeID( "Ordn" );
-        var idTrgt = charIDToTypeID( "Trgt" );
-        ref3.putEnumerated( idAdjL, idOrdn, idTrgt );
-    desc12.putReference( idnull, ref3 );
-    var idT = charIDToTypeID( "T   " );
-        var desc13 = new ActionDescriptor();
-        var idAdjs = charIDToTypeID( "Adjs" );
-            var list1 = new ActionList();
-                var desc14 = new ActionDescriptor();
-                var idChnl = charIDToTypeID( "Chnl" );
-                var idChnl = charIDToTypeID( "Chnl" );
-                var idCmps = charIDToTypeID( "Cmps" );
-                desc14.putEnumerated( idChnl, idChnl, idCmps );
-                var idH = charIDToTypeID( "H   " );
-                desc14.putInteger( idH, hue );
-                var idStrt = charIDToTypeID( "Strt" );
-                desc14.putInteger( idStrt, sat );
-                var idLght = charIDToTypeID( "Lght" );
-                desc14.putInteger( idLght, light );
-            var idHsttwo = charIDToTypeID( "Hst2" );
-            list1.putObject( idHsttwo, desc14 );
-        desc13.putList( idAdjs, list1 );
-    var idHStr = charIDToTypeID( "HStr" );
-    desc12.putObject( idT, idHStr, desc13 );
-executeAction( idsetd, desc12, DialogModes.NO );
+    var c2t = function (s) {
+        return app.charIDToTypeID(s);
+    };
+    var s2t = function (s) {
+        return app.stringIDToTypeID(s);
+    };
+    var descriptor = new ActionDescriptor();
+    var descriptor2 = new ActionDescriptor();
+    var descriptor3 = new ActionDescriptor();
+    var reference = new ActionReference();
+
+    reference.putClass( s2t( "adjustmentLayer" ));
+    descriptor3.putReference( c2t( "null" ), reference );
+    descriptor.putString( s2t( "name" ), (layerName) + """ color adjust""" );
+    descriptor.putBoolean( s2t( "group" ), true );
+    descriptor2.putEnumerated( s2t( "presetKind" ), s2t( "presetKindType" ), s2t( "presetKindDefault" ));
+    descriptor2.putBoolean( s2t( "colorize" ), true );
+    descriptor.putObject( s2t( "type" ), s2t( "hueSaturation" ), descriptor2 );
+    descriptor3.putObject( s2t( "using" ), s2t( "adjustmentLayer" ), descriptor );
+    executeAction( s2t( "make" ), descriptor3, DialogModes.NO );
+//sets hue, sat, lightness
+    var descriptor = new ActionDescriptor();
+    var descriptor2 = new ActionDescriptor();
+    var descriptor3 = new ActionDescriptor();
+    var list = new ActionList();
+    var reference = new ActionReference();
+
+    reference.putEnumerated( s2t( "adjustmentLayer" ), s2t( "ordinal" ), s2t( "targetEnum" ));
+    descriptor.putReference( c2t( "null" ), reference );
+    descriptor2.putEnumerated( s2t( "presetKind" ), s2t( "presetKindType" ), s2t( "presetKindCustom" ));
+    descriptor3.putEnumerated( s2t( "channel" ), s2t( "channel" ), s2t( "composite" ));
+    descriptor3.putInteger( s2t( "hue" ), hue );
+    descriptor3.putInteger( c2t( "Strt" ), sat );
+    descriptor3.putInteger( s2t( "lightness" ), light );
+    list.putObject( s2t( "hueSatAdjustmentV2" ), descriptor3 );
+    descriptor2.putList( s2t( "adjustment" ), list );
+    descriptor.putObject( s2t( "to" ), s2t( "hueSaturation" ), descriptor2 );
+    executeAction( s2t( "set" ), descriptor, DialogModes.NO );
     } else {return}
 }
+
 makeLayers();
 splitChannels('Cyan');
 splitChannels('Magenta');
