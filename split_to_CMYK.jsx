@@ -1,37 +1,25 @@
 #target photoshop
 #targetengine "main"
 
-var doc = app.activeDocument;
-
-//switch color mode to get 4 channels
-doc.changeMode(ChangeMode.CMYK);
-
-//copies all channels into their own layers and adjusts blending mode
+//prototype to add, name and change blendmode of layers
+function channelLayer(layerName,blendMode) {
+	var layer = doc.artLayers.add();
+		layer.name = layerName;
+		layer.blendMode = blendMode;
+	return layer;
+	}
 //reverse order of var layerK - layerC so layers appear in proper order in PS
 function makeLayers() {
-		var layers = doc.artLayers;
-
-		var layerK = layers.add();
-  			layerK.name = 'Black';
-  			layerK.blendMode = BlendMode.NORMAL;
-
-		var layerY = layers.add();
-  			layerY.name = 'Yellow';
-  			layerY.blendMode = BlendMode.MULTIPLY;
-
-		var layerM = layers.add();
-  			layerM.name = 'Magenta';
-  			layerM.blendMode = BlendMode.MULTIPLY;
-
-		var layerC = layers.add();
-  			layerC.name = 'Cyan';
-  			layerC.blendMode = BlendMode.MULTIPLY;
+	var layerK = channelLayer('Black', BlendMode.NORMAL);
+	var layerY = channelLayer('Yellow', BlendMode.MULTIPLY);
+	var layerM = channelLayer('Magenta', BlendMode.MULTIPLY);
+	var layerC = channelLayer('Cyan', BlendMode.MULTIPLY);
 }
-  //used in splitChannels function
+ //used in splitChannels function
 function selectCopy() {
-        doc.selection.selectAll();
-        doc.selection.copy();
-  }
+    doc.selection.selectAll();
+    doc.selection.copy();
+}
 //copies channels into corresponding layers
 function splitChannels(targetChannel) {
     doc.activeLayer = doc.artLayers.getByName("Background");
@@ -40,7 +28,6 @@ function splitChannels(targetChannel) {
     doc.activeLayer = doc.artLayers.getByName(targetChannel);
     doc.paste();
 }
-
 function addLevelsHueSat(layerName, hue, sat, light) {
 //add levels adj layer
     doc.activeLayer = doc.artLayers.getByName(layerName);
@@ -50,75 +37,69 @@ function addLevelsHueSat(layerName, hue, sat, light) {
     var s2t = function (s) {
         return app.stringIDToTypeID(s);
     };
-    var descriptor = new ActionDescriptor();
-    var descriptor2 = new ActionDescriptor();
-    var descriptor3 = new ActionDescriptor();
-    var reference = new ActionReference();
+    var levelsDes1 = new ActionDescriptor();
+    var levelsDes2 = new ActionDescriptor();
+    var levelsDes3 = new ActionDescriptor();
+    var levelsRef = new ActionReference();
 
-    reference.putClass( s2t( "adjustmentLayer" ));
-    descriptor.putReference( c2t( "null" ), reference );
-    descriptor2.putString( s2t( "name" ), (layerName) + """ Levels""" );
-    descriptor2.putBoolean( s2t( "group" ), true );
-    descriptor3.putEnumerated( s2t( "presetKind" ), s2t( "presetKindType" ), s2t( "presetKindDefault" ));
-    descriptor2.putObject( s2t( "type" ), s2t( "levels" ), descriptor3 );
-    descriptor.putObject( s2t( "using" ), s2t( "adjustmentLayer" ), descriptor2 );
-    executeAction( s2t( "make" ), descriptor, DialogModes.NO );
+    levelsRef.putClass( s2t("adjustmentLayer"));
+    levelsDes1.putReference( c2t("null"), levelsRef);
+    levelsDes2.putString( s2t("name"), (layerName) + """ Levels""");
+    levelsDes2.putBoolean( s2t("group"), true );
+    levelsDes3.putEnumerated( s2t("presetKind"), s2t("presetKindType"), s2t("presetKindDefault"));
+    levelsDes2.putObject( s2t("type"), s2t("levels"), levelsDes3);
+    levelsDes1.putObject( s2t("using"), s2t("adjustmentLayer"), levelsDes2);
+    executeAction( s2t("make"), levelsDes1, DialogModes.NO);
 //add hue sat adj layer - if statement is so Black doesnt get a hue adj layer
     if (layerName != 'Black') {
-    var c2t = function (s) {
-        return app.charIDToTypeID(s);
-    };
-    var s2t = function (s) {
-        return app.stringIDToTypeID(s);
-    };
-    var descriptor = new ActionDescriptor();
-    var descriptor2 = new ActionDescriptor();
-    var descriptor3 = new ActionDescriptor();
-    var reference = new ActionReference();
+        var addHueSatDes1 = new ActionDescriptor();
+        var addHueSatDes2 = new ActionDescriptor();
+        var addHueSatDes3 = new ActionDescriptor();
+        var addHueSatRef = new ActionReference();
 
-    reference.putClass( s2t( "adjustmentLayer" ));
-    descriptor3.putReference( c2t( "null" ), reference );
-    descriptor.putString( s2t( "name" ), (layerName) + """ color adjust""" );
-    descriptor.putBoolean( s2t( "group" ), true );
-    descriptor2.putEnumerated( s2t( "presetKind" ), s2t( "presetKindType" ), s2t( "presetKindDefault" ));
-    descriptor2.putBoolean( s2t( "colorize" ), true );
-    descriptor.putObject( s2t( "type" ), s2t( "hueSaturation" ), descriptor2 );
-    descriptor3.putObject( s2t( "using" ), s2t( "adjustmentLayer" ), descriptor );
-    executeAction( s2t( "make" ), descriptor3, DialogModes.NO );
+    addHueSatRef.putClass(s2t("adjustmentLayer"));
+    addHueSatDes3.putReference(c2t("null"), addHueSatRef);
+    addHueSatDes1.putString(s2t("name"), (layerName) + """ color adjust""");
+    addHueSatDes1.putBoolean(s2t("group"), true );
+    addHueSatDes2.putEnumerated(s2t("presetKind"), s2t("presetKindType"), s2t("presetKindDefault"));
+    addHueSatDes2.putBoolean(s2t("colorize"), true);
+    addHueSatDes1.putObject(s2t("type"), s2t("hueSaturation"), addHueSatDes2);
+    addHueSatDes3.putObject(s2t("using"), s2t("adjustmentLayer"), addHueSatDes1);
+    executeAction(s2t("make"), addHueSatDes3, DialogModes.NO);
 //sets hue, sat, lightness
-    var descriptor = new ActionDescriptor();
-    var descriptor2 = new ActionDescriptor();
-    var descriptor3 = new ActionDescriptor();
-    var list = new ActionList();
-    var reference = new ActionReference();
+    var setHueSatDes1 = new ActionDescriptor();
+    var setHueSatDes2 = new ActionDescriptor();
+    var setHueSatDes3 = new ActionDescriptor();
+    var setHueSatList = new ActionList();
+    var setHueSatRef = new ActionReference();
 
-    reference.putEnumerated( s2t( "adjustmentLayer" ), s2t( "ordinal" ), s2t( "targetEnum" ));
-    descriptor.putReference( c2t( "null" ), reference );
-    descriptor2.putEnumerated( s2t( "presetKind" ), s2t( "presetKindType" ), s2t( "presetKindCustom" ));
-    descriptor3.putEnumerated( s2t( "channel" ), s2t( "channel" ), s2t( "composite" ));
-    descriptor3.putInteger( s2t( "hue" ), hue );
-    descriptor3.putInteger( c2t( "Strt" ), sat );
-    descriptor3.putInteger( s2t( "lightness" ), light );
-    list.putObject( s2t( "hueSatAdjustmentV2" ), descriptor3 );
-    descriptor2.putList( s2t( "adjustment" ), list );
-    descriptor.putObject( s2t( "to" ), s2t( "hueSaturation" ), descriptor2 );
-    executeAction( s2t( "set" ), descriptor, DialogModes.NO );
+    setHueSatRef.putEnumerated(s2t("adjustmentLayer"), s2t("ordinal"), s2t("targetEnum"));
+    setHueSatDes1.putReference(c2t("null"), setHueSatRef);
+    setHueSatDes2.putEnumerated(s2t("presetKind"), s2t("presetKindType"), s2t("presetKindCustom"));
+    setHueSatDes3.putEnumerated(s2t("channel"), s2t("channel"), s2t("composite"));
+    setHueSatDes3.putInteger(s2t("hue"), hue);
+    setHueSatDes3.putInteger(c2t("Strt"), sat);
+    setHueSatDes3.putInteger(s2t("lightness"), light);
+    setHueSatList.putObject(s2t("hueSatAdjustmentV2"), setHueSatDes3);
+    setHueSatDes2.putList(s2t("adjustment"), setHueSatList);
+    setHueSatDes1.putObject(s2t("to"), s2t("hueSaturation"), setHueSatDes2);
+    executeAction(s2t("set"), setHueSatDes1, DialogModes.NO);
     } else {return}
 }
-
-makeLayers();
-splitChannels('Cyan');
-splitChannels('Magenta');
-splitChannels('Yellow');
-splitChannels('Black');
-//sets color mode back to RGB
-doc.changeMode(ChangeMode.RGB);
-addLevelsHueSat('Cyan', 174, 50, 20);
-addLevelsHueSat('Magenta', 300, 50, 20);
-addLevelsHueSat('Yellow', 50, 50, 20);
-addLevelsHueSat('Black')
-
-alert("Split to CMYK\n* Use Hue/Saturation Adjustment layers to lighten, darken, change color\n* Use Levels adjustment layer for best contrast\n* Use Layer masks to mask out content\n* Original image is hidden on bottom layer\n* Rename adjusted layers to the color name you want in the final tiff files");
-
-//runs the adjustment layers action set
-//app.doAction("split_to_CMYK_adj_layers", "split_to_CMYK_adj_layers.ATN");
+function runScript() {
+        doc.changeMode(ChangeMode.CMYK);
+    makeLayers();
+    splitChannels('Cyan');
+    splitChannels('Magenta');
+    splitChannels('Yellow');
+    splitChannels('Black');
+        doc.changeMode(ChangeMode.RGB);
+    addLevelsHueSat('Cyan', 174, 50, 20);
+    addLevelsHueSat('Magenta', 300, 50, 20);
+    addLevelsHueSat('Yellow', 50, 50, 20);
+    addLevelsHueSat('Black')
+    	app.refresh();
+    alert("Split to CMYK\n* Use Hue/Saturation Adjustment layers to lighten, darken, change color\n* Use Levels adjustment layer for best contrast\n* Use Layer masks to mask out content\n* Original image is hidden on bottom layer");
+}
+var doc = app.activeDocument;
+runScript();
